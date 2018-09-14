@@ -12,3 +12,6 @@ compile: $(SOURCES:.scala=.class)
 
 clean:
 	@$(RM) $(SRC)/*.class
+	
+run:
+	@$(S) App
