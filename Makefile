@@ -4,11 +4,9 @@ SOURCES = $(shell ls $(SRC)/**/*.scala)
 S = scala
 SC = scalac
 
-compile: $(SOURCES:.scala=.class)
-
-%.class: %.scala
+compile:
 	@mkdir -p $(BIN)
-	@$(SC) -cp ./bin -d $(BIN) $*.scala
+	@$(SC) -cp ./bin -d $(BIN) $(SOURCES)
 
 clean:
 	@$(RM) -r $(BIN)
