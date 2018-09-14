@@ -1,17 +1,20 @@
 SRC = .
-SOURCES = $(shell ls $(SRC)/*.scala)
+BIN = ./bin
+SOURCES = $(shell ls $(SRC)/**/*.scala)
 S = scala
 SC = scalac
-CP = .
 
 compile: $(SOURCES:.scala=.class)
 
 %.class: %.scala
-	@echo "Compiling $*.scala.."
-	@$(SC) -cp $(CP) -d . $*.scala
+	@mkdir -p $(BIN)
+	@$(SC) -cp ./bin -d $(BIN) $*.scala
 
 clean:
-	@$(RM) $(SRC)/*.class
+	@$(RM) -r $(BIN)
 	
 run:
-	@$(S) App
+	@$(S) -cp ./bin todo.App
+
+test:
+	@$(S) -cp ./bin todo.TestRunner
