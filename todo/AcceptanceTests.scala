@@ -2,27 +2,33 @@ package todo
 
 import java.net.{HttpURLConnection, URL}
 
+import com.sun.net.httpserver.HttpServer
+
 class AcceptanceTests
 {
+    var server: HttpServer = _
+
+    def setUp() = {
+        server = Todo.start(9090)
+    }
+
     def test404ForNoSuchTodo(): Unit = {
-        val server = Todo.start(9090)
         val res = HTTP.get("http://localhost:9090/todos/doesnt-exist")
         assert(res.status == 404)
-        server.stop(0)
     }
 
     def test200ForExistingTodo(): Unit = {
-        val server = Todo.start(9090)
         HTTP.put("http://localhost:9090/todos/exists")
         val res = HTTP.get("http://localhost:9090/todos/exists")
         assert(res.status == 200)
-        server.stop(0)
     }
 
     def test201ForCreatingTodo(): Unit = {
-        val server = Todo.start(9090)
         val res = HTTP.put("http://localhost:9090/todos/new")
         assert(res.status == 201)
+    }
+
+    def tearDown() = {
         server.stop(0)
     }
 }

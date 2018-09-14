@@ -16,11 +16,16 @@ extends App
         lazy val i = s.newInstance()
         val tests = s.getMethods.toSeq.filter(_.getName.startsWith("test"))
         tests.foreach { t =>
-            Try(t.invoke(i)) match {
-                case Success(_) => println(s"+ ${t.getName}")
-                case Failure(f) =>
+            Try(s.getMethod("setUp")).foreach(_.invoke(i))
+            try {
+                t.invoke(i)
+                println(s"+ ${t.getName}")
+            } catch {
+                case f: Throwable =>
                     println(s"- ${t.getName}")
                     throw f
+            } finally {
+                Try(s.getMethod("tearDown")).foreach(_.invoke(i))
             }
         }
     }
