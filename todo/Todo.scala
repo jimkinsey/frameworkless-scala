@@ -10,20 +10,17 @@ object Todo
         val store = new TodoStore()
         val server = HttpServer.create(new InetSocketAddress(port), 0)
         server.createContext("/", (exchange: HttpExchange) => {
-            exchange.getRequestMethod match {
-                case "GET" => {
-                    val id = exchange.getRequestURI.getPath.split("/").last
+            (exchange.getRequestMethod, exchange.getRequestURI.getPath) match {
+                case ("GET", Todos(id)) => {
                     store.get(id) match {
                         case Some(t) => exchange.sendResponseHeaders(200, -1)
                         case None => exchange.sendResponseHeaders(404, -1)
                     }
                 }
-                case "PUT" =>
-                    val id = exchange.getRequestURI.getPath.split("/").last
+                case ("PUT", Todos(id)) =>
                     store.put(id)
                     exchange.sendResponseHeaders(201, -1)
-                case "DELETE" =>
-                    val id = exchange.getRequestURI.getPath.split("/").last
+                case ("DELETE", Todos(id)) =>
                     store.delete(id)
                     exchange.sendResponseHeaders(204, -1)
                 case _ =>
@@ -34,6 +31,8 @@ object Todo
         server.start()
         server
     }
+
+    val Todos = """\/todos\/([\w\d]+)""".r
 }
 
 class TodoStore
