@@ -22,6 +22,10 @@ object Todo
                     val id = exchange.getRequestURI.getPath.split("/").last
                     store.put(id)
                     exchange.sendResponseHeaders(201, -1)
+                case "DELETE" =>
+                    val id = exchange.getRequestURI.getPath.split("/").last
+                    store.delete(id)
+                    exchange.sendResponseHeaders(204, -1)
                 case _ =>
                     exchange.sendResponseHeaders(404, -1)
             }
@@ -36,6 +40,7 @@ class TodoStore
 {
     def get(id: String): Option[String] = storage.get(id)
     def put(id: String) = storage.put(id, id)
+    def delete(id: String) = storage.remove(id)
 
     private var storage: scala.collection.mutable.Map[String, String] = scala.collection.mutable.Map()
 }

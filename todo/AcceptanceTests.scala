@@ -28,6 +28,12 @@ class AcceptanceTests
         assert(res.status == 201)
     }
 
+    def test204ForDeletingTodo(): Unit = {
+        HTTP.put("http://localhost:9090/todos/exists")
+        val res = HTTP.delete("http://localhost:9090/todos/exists")
+        assert(res.status == 204)
+    }
+
     def tearDown() = {
         server.stop(0)
     }
