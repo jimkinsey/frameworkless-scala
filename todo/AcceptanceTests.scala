@@ -12,26 +12,38 @@ class AcceptanceTests
         server = Todo.start(9090)
     }
 
-    def test404ForNoSuchTodo(): Unit = {
+    def testNoSuchTodo(): Unit = {
         val res = HTTP.get("http://localhost:9090/todos/doesnt-exist")
         assert(res.status == 404)
     }
 
-    def test200ForExistingTodo(): Unit = {
+    def testGetTodo(): Unit = {
         HTTP.put("http://localhost:9090/todos/exists")
         val res = HTTP.get("http://localhost:9090/todos/exists")
         assert(res.status == 200)
     }
 
-    def test201ForCreatingTodo(): Unit = {
+    def testCreatingTodo(): Unit = {
         val res = HTTP.put("http://localhost:9090/todos/new")
         assert(res.status == 201)
     }
 
-    def test204ForDeletingTodo(): Unit = {
+    def testDeletingTodo(): Unit = {
         HTTP.put("http://localhost:9090/todos/exists")
         val res = HTTP.delete("http://localhost:9090/todos/exists")
         assert(res.status == 204)
+    }
+
+    def testListTodos() = {
+        HTTP.put("http://localhost:9090/todos/get-milk")
+        HTTP.put("http://localhost:9090/todos/hang-laundry")
+        HTTP.put("http://localhost:9090/todos/put-out-cat")
+        val res = HTTP.get("http://localhost:9090/todos")
+
+        assert(res.body ==
+          """get-milk
+            |hang-laundry
+            |put-out-cat""".stripMargin)
     }
 
     def tearDown() = {

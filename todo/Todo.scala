@@ -23,6 +23,13 @@ object Todo
                 case ("DELETE", Todos(id)) =>
                     store.delete(id)
                     exchange.sendResponseHeaders(204, -1)
+                case ("GET", TodoList) =>
+                    val body: String = store.getAll.mkString("\n")
+                    val bytes = body.getBytes("UTF-8")
+                    exchange.sendResponseHeaders(200, bytes.length)
+                    val os = exchange.getResponseBody
+                    os.write(bytes)
+                    os.close()
                 case _ =>
                     exchange.sendResponseHeaders(404, -1)
             }
@@ -32,7 +39,8 @@ object Todo
         server
     }
 
-    val Todos = """\/todos\/([\w\d]+)""".r
+    val Todos = """\/todos\/([\w\d-]+)""".r
+    val TodoList = "/todos"
 }
 
 class TodoStore
@@ -40,6 +48,8 @@ class TodoStore
     def get(id: String): Option[String] = storage.get(id)
     def put(id: String) = storage.put(id, id)
     def delete(id: String) = storage.remove(id)
+
+    def getAll: Seq[String] = storage.keySet.toSeq.sorted
 
     private var storage: scala.collection.mutable.Map[String, String] = scala.collection.mutable.Map()
 }
