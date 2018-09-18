@@ -34,7 +34,7 @@ object HTTP
   }
 
   case class Request(method: String, uri: String)
-  case class Response(status: Int, body: String)
+  case class Response(status: Int, body: String = "")
 
   private def getBytes(inputStream: InputStream): Array[Byte] = {
     val buffer = new java.io.ByteArrayOutputStream
