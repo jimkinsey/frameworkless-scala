@@ -4,10 +4,10 @@ import java.net.InetSocketAddress
 
 import com.sun.net.httpserver.{HttpExchange, HttpServer}
 
-object Todo
+object Server
 {
     def start(port: Int) = {
-        val store = new TodoStore()
+        val store = new Store()
         val server = HttpServer.create(new InetSocketAddress(port), 0)
         server.createContext("/", (exchange: HttpExchange) => {
             (exchange.getRequestMethod, exchange.getRequestURI.getPath) match {
@@ -42,15 +42,3 @@ object Todo
     val Todos = """\/todos\/([\w\d-]+)""".r
     val TodoList = "/todos"
 }
-
-class TodoStore
-{
-    def get(id: String): Option[String] = storage.get(id)
-    def put(id: String) = storage.put(id, id)
-    def delete(id: String) = storage.remove(id)
-
-    def getAll: Seq[String] = storage.keySet.toSeq.sorted
-
-    private var storage: scala.collection.mutable.Map[String, String] = scala.collection.mutable.Map()
-}
-

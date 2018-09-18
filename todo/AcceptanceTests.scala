@@ -9,7 +9,7 @@ class AcceptanceTests
     var server: HttpServer = _
 
     def setUp() = {
-        server = Todo.start(9090)
+        server = Server.start(9090)
     }
 
     def testNoSuchTodo(): Unit = {

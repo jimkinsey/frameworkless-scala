@@ -2,7 +2,7 @@ package todo
 
 import java.io.File
 
-import scala.util.{Try, Success, Failure}
+import scala.util.Try
 
 object TestRunner
 extends App
@@ -36,9 +36,6 @@ extends App
 object FindTestClasses
 {
     def apply() = getClasses("").filter(_.getName.endsWith("Tests"))
-
-    import java.io.IOException
-    import java.util
 
     import scala.collection.JavaConverters._
 

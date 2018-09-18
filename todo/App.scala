@@ -3,6 +3,8 @@ package todo
 object App
 {
   def main(args: Array[String]) {
-    Todo.start(args(0).toInt)
+    val port = args.headOption.orElse(sys.env.get("PORT")).map(_.toInt).getOrElse(8080)
+    val server = Server.start(port)
+    println(s"Listening on port ${server.getAddress.getPort}")
   }
 }
