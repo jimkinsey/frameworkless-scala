@@ -6,13 +6,16 @@ SC = scalac
 
 compile:
 	@mkdir -p $(BIN)
-	@$(SC) -cp ./bin -d $(BIN) $(SOURCES)
+	@$(SC) -cp $(BIN) -d $(BIN) $(SOURCES)
 
 clean:
 	@$(RM) -r $(BIN)
 	
 run:
-	@$(S) -cp ./bin todo.App
+	@$(S) -cp $(BIN) todo.App
 
 test:
-	@$(S) -cp ./bin todo.TestRunner
+	@$(S) -cp $(BIN) todo.TestRunner
+
+assemble:
+	cd $(BIN); jar cef todo.App todo.jar *
