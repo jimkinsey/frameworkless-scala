@@ -2,11 +2,11 @@ package todo
 
 class Store
 {
-    def get(id: String): Option[String] = storage.get(id)
-    def put(id: String) = storage.put(id, id)
-    def delete(id: String) = storage.remove(id)
+  def get(id: String): Option[String] = storage.get(id)
+  def put(id: String): Option[String] = storage.put(id, id)
+  def delete(id: String): Option[String] = storage.remove(id)
 
-    def getAll: Seq[String] = storage.keySet.toSeq.sorted
+  def getAll: Seq[String] = storage.keySet.toSeq.sorted
 
-    private var storage: scala.collection.mutable.Map[String, String] = scala.collection.mutable.Map()
+  private val storage: scala.collection.mutable.Map[String, String] = scala.collection.mutable.Map()
 }
