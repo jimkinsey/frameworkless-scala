@@ -9,6 +9,8 @@ class Controller
 {
   def route(req: Request): Response =
     (req.method, req.uri) match {
+      case ("GET", "/") =>
+        Response(200, View.page, Map("Content-Type" -> Seq("application/html; charset=UTF-8")))
       case ("GET", Todos(id)) =>
         store.get(id) match {
           case Some(t) => Response(200)

@@ -10,6 +10,17 @@ class AcceptanceTests
     server = App.launchServer(9090)
   }
 
+  def testHTMLPageExists(): Unit = {
+    val res = HTTP.get("http://localhost:9090/")
+    assert(res.status == 200)
+    assert(res.headers("Content-type") contains "application/html; charset=UTF-8")
+  }
+
+  def testPageHasHeading(): Unit = {
+    val res = HTTP.get("http://localhost:9090/")
+    assert(res.body contains "<h1>My Todo List</h1>")
+  }
+
   def testNoSuchTodo(): Unit = {
     val res = HTTP.get("http://localhost:9090/todos/doesnt-exist")
     assert(res.status == 404)

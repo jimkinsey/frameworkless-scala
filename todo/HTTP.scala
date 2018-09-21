@@ -1,6 +1,7 @@
 package todo
 
 import java.net.{HttpURLConnection, URL}
+import scala.collection.JavaConverters._
 
 object HTTP
 {
@@ -29,10 +30,14 @@ object HTTP
         ""
       }
 
-    Response(conn.getResponseCode, body)
+    val headers = conn.getHeaderFields.asScala.filter(_._1 != null).foldLeft[Map[String, Seq[String]]](Map.empty) {
+      case (acc, (key, values)) => acc ++ Map(key -> values.asScala)
+    }
+
+    Response(conn.getResponseCode, body, headers)
   }
 
   case class Request(method: String, uri: String)
-  case class Response(status: Int, body: String = "")
+  case class Response(status: Int, body: String = "", headers: Map[String, Seq[String]] = Map.empty)
 }
 

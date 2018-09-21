@@ -14,6 +14,12 @@ object Server
       val req = Request(exchange.getRequestMethod, exchange.getRequestURI.toString)
       val res = route(req)
 
+      res.headers.foreach { case (name, values) =>
+        values.foreach { value =>
+          exchange.getResponseHeaders.add(name, value)
+        }
+      }
+
       if (res.body.nonEmpty) {
         val bytes = res.body.getBytes("UTF-8")
         exchange.sendResponseHeaders(res.status, bytes.length)
