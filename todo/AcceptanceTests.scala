@@ -26,6 +26,16 @@ class AcceptanceTests
     assert("""<div.+class="empty-state"""".r.findFirstMatchIn(res.body).isDefined)
   }
 
+  def testPageHasFormToCreateNewItems() {
+    val res = HTTP.get("http://localhost:9090")
+    assert("""<form.+action="/".+method="POST"""".r.findFirstMatchIn(res.body).isDefined)
+  }
+
+  def testSubmittingFormCreatesANewItem(): Unit = {
+    val res = HTTP.post("http://localhost:9090", Form.body(Map("name" -> Seq("Get milk"))))
+    assert("""<li.*>Get milk</li>""".r.findFirstMatchIn(res.body).isDefined)
+  }
+
   def testNoSuchTodo(): Unit = {
     val res = HTTP.get("http://localhost:9090/todos/doesnt-exist")
     assert(res.status == 404)

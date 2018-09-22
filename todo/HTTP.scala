@@ -1,12 +1,17 @@
 package todo
 
 import java.net.{HttpURLConnection, URL}
+
 import scala.collection.JavaConverters._
 
 object HTTP
 {
   def get(uri: String): Response = {
     send(Request("GET", uri))
+  }
+
+  def post(uri: String, body: String): Response = {
+    send(Request("POST", uri, body))
   }
 
   def put(uri: String): Response = {
@@ -20,6 +25,13 @@ object HTTP
   def send(req: Request): Response = {
     val conn = new URL(req.uri).openConnection().asInstanceOf[HttpURLConnection]
     conn.setRequestMethod(req.method)
+
+    if (req.body.nonEmpty) {
+      conn.setDoOutput(true)
+      conn.getOutputStream.write(req.body.getBytes("UTF-8"))
+      conn.getOutputStream.close()
+    }
+
     conn.connect()
 
     val body =
@@ -30,14 +42,16 @@ object HTTP
         ""
       }
 
-    val headers = conn.getHeaderFields.asScala.filter(_._1 != null).foldLeft[Map[String, Seq[String]]](Map.empty) {
+    val headers = conn.getHeaderFields.asScala.filter(_._1 != null).foldLeft[Headers](Map.empty) {
       case (acc, (key, values)) => acc ++ Map(key -> values.asScala)
     }
 
     Response(conn.getResponseCode, body, headers)
   }
 
-  case class Request(method: String, uri: String)
-  case class Response(status: Int, body: String = "", headers: Map[String, Seq[String]] = Map.empty)
+  type Headers = Map[String, Seq[String]]
+
+  case class Request(method: String, uri: String, body: String = "")
+  case class Response(status: Int, body: String = "", headers: Headers = Map.empty)
 }
 

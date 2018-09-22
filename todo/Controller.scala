@@ -10,7 +10,11 @@ class Controller
   def route(req: Request): Response =
     (req.method, req.uri) match {
       case ("GET", "/") =>
-        Response(200, View.page, Map("Content-Type" -> Seq("text/html; charset=UTF-8")))
+        Response(200, View.page(store.getAll), Map("Content-Type" -> Seq("text/html; charset=UTF-8")))
+      case ("POST", "/") =>
+        val form = Form.values(req.body)
+        store.put(form("name").head)
+        Response(201, View.page(store.getAll), Map("Content-Type" -> Seq("text/html; charset=UTF-8")))
       case ("GET", Todos(id)) =>
         store.get(id) match {
           case Some(t) => Response(200)

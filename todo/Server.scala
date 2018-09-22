@@ -11,7 +11,13 @@ object Server
     val server = HttpServer.create(new InetSocketAddress(port), 0)
 
     server.createContext("/", (exchange: HttpExchange) => {
-      val req = Request(exchange.getRequestMethod, exchange.getRequestURI.toString)
+
+      val req = Request(
+        method = exchange.getRequestMethod,
+        uri = exchange.getRequestURI.toString,
+        body = new String(InputStreams.getBytes(exchange.getRequestBody), "UTF-8")
+      )
+
       val res = route(req)
 
       res.headers.foreach { case (name, values) =>
