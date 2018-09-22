@@ -13,7 +13,7 @@ class AcceptanceTests
   def testHTMLPageExists(): Unit = {
     val res = HTTP.get("http://localhost:9090/")
     assert(res.status == 200)
-    assert(res.headers("Content-type") contains "application/html; charset=UTF-8")
+    assert(res.headers("Content-type") contains "text/html; charset=UTF-8")
   }
 
   def testPageHasHeading(): Unit = {
