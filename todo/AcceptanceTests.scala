@@ -21,6 +21,11 @@ class AcceptanceTests
     assert("<h1.*>My Todo List</h1>".r.findFirstMatchIn(res.body).isDefined)
   }
 
+  def testPageHasEmptyStateIndicator(): Unit = {
+    val res = HTTP.get("http://localhost:9090")
+    assert("""<div.+class="empty-state"""".r.findFirstMatchIn(res.body).isDefined)
+  }
+
   def testNoSuchTodo(): Unit = {
     val res = HTTP.get("http://localhost:9090/todos/doesnt-exist")
     assert(res.status == 404)
