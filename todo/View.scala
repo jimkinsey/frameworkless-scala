@@ -9,7 +9,9 @@ object View
             <title>My Todo List</title>
           </head>
           <body>
-            <h1>My Todo List</h1>
+           <section aria-labelledby="todos-label">
+             <h1 id="todos-label">My Todo List</h1>
+           </section>
           </body>
         </html>"""
   }

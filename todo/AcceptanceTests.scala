@@ -18,7 +18,7 @@ class AcceptanceTests
 
   def testPageHasHeading(): Unit = {
     val res = HTTP.get("http://localhost:9090/")
-    assert(res.body contains "<h1>My Todo List</h1>")
+    assert("<h1.*>My Todo List</h1>".r.findFirstMatchIn(res.body).isDefined)
   }
 
   def testNoSuchTodo(): Unit = {
