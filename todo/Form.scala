@@ -1,5 +1,6 @@
 package todo
 
+import java.net.URLDecoder.decode
 import java.net.{URLDecoder, URLEncoder}
 
 object Form
@@ -17,9 +18,9 @@ object Form
       k => k -> (v1.getOrElse(k, Seq.empty) ++ v2.getOrElse(k, Seq.empty))
     } toMap
 
-    """(\w+)=([^&]*)""".r.findFirstMatchIn(body) match {
+    """([^&]+?)=([^&]*)""".r.findFirstMatchIn(body) match {
       case Some(m) =>
-        merge(Map(m.group(1) -> Seq(URLDecoder.decode(m.group(2), "UTF-8"))), values(m.after.toString))
+        merge(Map(decode(m.group(1), "UTF-8") -> Seq(decode(m.group(2), "UTF-8"))), values(m.after.toString))
       case _ =>
         Map.empty
     }

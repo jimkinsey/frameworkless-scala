@@ -33,7 +33,7 @@ class AcceptanceTests
 
   def testSubmittingFormCreatesANewItem(): Unit = {
     val res = HTTP.post("http://localhost:9090", Form.body(Map("name" -> Seq("Get milk"))))
-    assert("""<li.*>Get milk</li>""".r.findFirstMatchIn(res.body).isDefined)
+    assert("""Get milk""".r.findFirstMatchIn(res.body).isDefined)
   }
 
   def testAddingAnItemUpdatesTheLiveFeedbackRegion(): Unit = {

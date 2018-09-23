@@ -51,4 +51,9 @@ class FormTests
     val values = Form.values("fullname=Jim+Kinsey")
     assert(values == Map("fullname" -> Seq("Jim Kinsey")))
   }
+
+  def testFormValuesWithNameToDecode(): Unit = {
+    val values = Form.values("full+name=Jim+Kinsey")
+    assert(values == Map("full name" -> Seq("Jim Kinsey")))
+  }
 }
