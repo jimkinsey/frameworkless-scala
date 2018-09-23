@@ -36,6 +36,11 @@ class AcceptanceTests
     assert("""<li.*>Get milk</li>""".r.findFirstMatchIn(res.body).isDefined)
   }
 
+  def testAddingAnItemUpdatesTheLiveFeedbackRegion(): Unit = {
+    val res = HTTP.post("http://localhost:9090", Form.body(Map("name" -> Seq("Get milk"))))
+    assert("""<div.+role="status".*>.*Get milk added.""".r.findFirstMatchIn(res.body).isDefined)
+  }
+
   def tearDown() = {
     server.stop(0)
   }
