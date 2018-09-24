@@ -43,6 +43,10 @@ object View
                 width: 1px !important;
                 overflow: hidden;
               }
+
+              :checked + label {
+                text-decoration: line-through;
+              }
             </style>
           </head>
           <body>
