@@ -57,6 +57,7 @@ object View
                  s"""<li>
                    <input type="checkbox" id="todo-$i"${if (item.done) " checked" else ""} name="${item.id}" onchange="this.form.submit();">
                    <label for="todo-$i">${item.name}</label>
+                   <button aria-label="delete ${item.name}" name="delete" value="${item.id}">&times;</button>
                  </li>"""
                }.mkString}</ul>
                <div class="empty-state">

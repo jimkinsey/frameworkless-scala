@@ -41,6 +41,15 @@ class AcceptanceTests
     assert("""<div.+role="status".*>.*Get milk added.""".r.findFirstMatchIn(res.body).isDefined)
   }
 
+  def testDeletingAnItem(): Unit = {
+    val create = HTTP.post("http://localhost:9090", Form.body(Map("name" -> Seq("Get milk"))))
+    val getMilkID = """<input.+name="([a-f0-9\-]+)"""".r.findFirstMatchIn(create.body).get.group(1)
+    val res = HTTP.post("http://localhost:9090", Form.body(Map("delete" -> Seq(getMilkID))))
+
+    assert("""<div.+role="status".*>.*Get milk deleted.""".r.findFirstMatchIn(res.body).isDefined)
+    assert(!res.body.contains(getMilkID))
+  }
+
   def tearDown() = {
     server.stop(0)
   }

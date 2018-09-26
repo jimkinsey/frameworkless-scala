@@ -42,8 +42,6 @@ class ControllerTests
 
     new Controller(store).route(req)
 
-    println(store.getAll)
-
     assert(
       store.getAll == Seq(
         Item("cat", "Bring in cat", done = false),
