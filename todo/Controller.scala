@@ -19,18 +19,22 @@ class Controller
         form.get("name") match {
           case Some(name :: Nil) =>
             store.put(Item(randomUUID.toString, name))
+
             Response(
               status = 201,
               body = View.page(store.getAll, feedback = s"$name added."),
               headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
             )
           case _ =>
-            val updated = form.collect {
-              case (id, values) if values.headOption.contains("on") => id
-            } flatMap store.get
-            updated.foreach { item =>
-              store.put(item.copy(done = true))
+            val updated = store.getAll.map {
+              case item if form.get(item.id) contains List("on") =>
+                item.copy(done = true)
+              case item =>
+                item.copy(done = false)
             }
+
+            updated.foreach(store.put)
+
             Response(
               status = 200,
               body = View.page(store.getAll, feedback = s"TODO"),
