@@ -1,0 +1,9 @@
+script:
+- make clean compile test
+jdk:
+- oraclejdk8
+sudo: required
+notifications:
+  email:
+    recipients:
+    - kinjacono@yahoo.co.uk
