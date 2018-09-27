@@ -59,6 +59,16 @@ class AcceptanceTests
     assert(s"""<input.+name="$getMilkID"[^>]+?>""".r.findFirstMatchIn(res.body) exists (_.matched.contains("checked")))
   }
 
+  def testUncheckingAnItem(): Unit = {
+    val create = HTTP.post("http://localhost:9090", Form.body(Map("name" -> Seq("Get milk"))))
+    val getMilkID = """<input.+name="([a-f0-9\-]+)"""".r.findFirstMatchIn(create.body).get.group(1)
+    HTTP.post("http://localhost:9090", Form.body(Map(getMilkID -> Seq("on"))))
+    val res = HTTP.post("http://localhost:9090", Form.body(Map()))
+
+    assert("""<div.+role="status".*>.*Get milk unchecked.""".r.findFirstMatchIn(res.body).isDefined)
+    assert(!(s"""<input.+name="$getMilkID"[^>]+?>""".r.findFirstMatchIn(res.body) exists (_.matched.contains("checked"))))
+  }
+
   def tearDown() = {
     server.stop(0)
   }

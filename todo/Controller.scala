@@ -50,10 +50,15 @@ class Controller
         updated.foreach(store.put)
 
         val checkedOff = updated.filter(_.done)
+        val unchecked = updated.filterNot(_.done)
+
+        val prefix = if (checkedOff.nonEmpty) s"${ListDescription(checkedOff.map(_.name))} checked off" else ""
+        val suffix = if (unchecked.nonEmpty) s"${ListDescription(unchecked.map(_.name))} unchecked" else ""
+        val separator = if (checkedOff.nonEmpty && unchecked.nonEmpty) ", " else ""
 
         Response(
           status = 200,
-          body = View.page(store.getAll, feedback = s"${ListDescription(checkedOff.map(_.name))} checked off."),
+          body = View.page(store.getAll, feedback = s"$prefix$separator$suffix."),
           headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
         )
       case _ =>
