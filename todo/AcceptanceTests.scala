@@ -50,6 +50,15 @@ class AcceptanceTests
     assert(!res.body.contains(getMilkID))
   }
 
+  def testCheckingOffAnItem(): Unit = {
+    val create = HTTP.post("http://localhost:9090", Form.body(Map("name" -> Seq("Get milk"))))
+    val getMilkID = """<input.+name="([a-f0-9\-]+)"""".r.findFirstMatchIn(create.body).get.group(1)
+    val res = HTTP.post("http://localhost:9090", Form.body(Map(getMilkID -> Seq("on"))))
+
+    assert("""<div.+role="status".*>.*Get milk checked off.""".r.findFirstMatchIn(res.body).isDefined)
+    assert(s"""<input.+name="$getMilkID"[^>]+?>""".r.findFirstMatchIn(res.body) exists (_.matched.contains("checked")))
+  }
+
   def tearDown() = {
     server.stop(0)
   }

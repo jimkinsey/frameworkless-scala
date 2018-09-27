@@ -49,9 +49,11 @@ class Controller
 
         updated.foreach(store.put)
 
+        val checkedOff = updated.filter(_.done)
+
         Response(
           status = 200,
-          body = View.page(store.getAll, feedback = s"TODO"),
+          body = View.page(store.getAll, feedback = s"${ListDescription(checkedOff.map(_.name))} checked off."),
           headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
         )
       case _ =>
