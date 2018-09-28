@@ -5,7 +5,10 @@ jdk:
 - oraclejdk8
 sudo: required
 script:
-- make clean compile test
+- make deps compile test assemble
+cache:
+  directories:
+  - ./lib
 notifications:
   email:
     recipients:
