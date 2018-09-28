@@ -1,4 +1,3 @@
-*.class
 .idea
-bin
-lib
+target
+project/target
