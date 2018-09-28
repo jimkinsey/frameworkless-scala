@@ -1,5 +1,6 @@
 before_install:
-- sudo apt-get install scala
+- sudo wget https://www.scala-lang.org/files/archive/scala-2.12.7.deb
+- sudo dpkg -i scala-2.12.7.deb
 jdk:
 - oraclejdk8
 sudo: required
