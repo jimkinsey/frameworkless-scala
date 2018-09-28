@@ -12,13 +12,13 @@ So far the only dependencies are that Java, Scala and Make are installed.
 
 HTTP
 ---
-
 It uses the `com.sun.net.httpserver.HttpServer` and `java.net.URL` for server / client HTTP with a thin layer of Scala sugar to make it more idiomatic to work with.
 
 Testing
 ---
-
 For testing, a home-made test runner app looks for classes ending `Tests` and executes methods starting `test` which use the standard Java `assert` statement.
+
+Inspired by golang, the test classes are located in the same source tree as the production code, so that the tests are close to the code under test.
 
 Templating
 ---

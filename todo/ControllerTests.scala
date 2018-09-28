@@ -1,52 +1,52 @@
 package todo
 
 import todo.HTTP.Request
-import todo.Model.Item
 
 class ControllerTests
 {
   def testPOSTWithValueOnForKnownItem(): Unit = {
-    val store = new Store()
-    store.put(Item("ID", "Put out cat"))
-    val req = Request("POST", "/", Form.body(Map("ID" -> Seq("on"))))
+    val todos = new Todos(new Store())
+    val item = todos.add("Put out cat")
+    val req = Request("POST", "/", Form.body(Map(item.id -> Seq("on"))))
 
-    new Controller(store).route(req)
+    new Controller(todos).route(req)
 
-    assert(store.get("ID") exists (_.done))
+    assert(todos.get(item.id) exists (_.done))
   }
 
   def testPOSTWithNameValue(): Unit = {
-    val store = new Store()
+    val todos = new Todos(new Store())
     val req = Request("POST", "/", Form.body(Map("name" -> Seq("Put out cat"))))
 
-    new Controller(store).route(req)
+    new Controller(todos).route(req)
 
-    assert(store.getAll exists (_.name == "Put out cat"))
+    assert(todos.list exists (_.name == "Put out cat"))
   }
 
   def testPOSTWithNoOnValueForCompletedItem(): Unit = {
-    val store = new Store()
-    store.put(Item("ID", "Bring in cat", done = true))
+    val todos = new Todos(new Store())
+    val item = todos.add("Bring in cat")
+    todos.checkOff(item.id)
     val req = Request("POST", "/", Form.body(Map()))
 
-    new Controller(store).route(req)
+    new Controller(todos).route(req)
 
-    assert(store.get("ID") exists (_.done == false))
+    assert(todos.get(item.id) exists (_.done == false))
   }
 
   def testPOSTForMultipleItemsWithDifferentStates(): Unit = {
-    val store = new Store()
-    store.put(Item("cat", "Bring in cat", done = true))
-    store.put(Item("dog", "Shoot dog", done = false))
-    val req = Request("POST", "/", Form.body(Map("dog" -> Seq("on"))))
+    val todos = new Todos(new Store())
 
-    new Controller(store).route(req)
+    val batheCat = todos.add("Bathe cat")
+    todos.checkOff(batheCat.id)
+    val shootDog = todos.add("Shoot dog")
+
+    val req = Request("POST", "/", Form.body(Map(shootDog.id -> Seq("on"))))
+
+    new Controller(todos).route(req)
 
     assert(
-      store.getAll == Seq(
-        Item("cat", "Bring in cat", done = false),
-        Item("dog", "Shoot dog", done = true)
-      )
+      todos.get(batheCat.id).exists(_.done == false) && todos.get(shootDog.id).exists(_.done)
     )
   }
 }

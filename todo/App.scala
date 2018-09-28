@@ -12,7 +12,8 @@ object App
 
   def launchServer(port: Int): HttpServer = {
     val store = new Store()
-    val controller = new Controller(store)
+    val todos = new Todos(store)
+    val controller = new Controller(todos)
     val server = Server.start(port, controller.route)
     server
   }
