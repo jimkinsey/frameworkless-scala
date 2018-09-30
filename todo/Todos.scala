@@ -24,10 +24,10 @@ class Todos
   }
 
   def checkOff(checkedOff: String*): Seq[Item] = {
-    val updated = store.getAll.map {
-      case item if checkedOff contains item.id =>
+    val updated = store.getAll.collect {
+      case item if checkedOff.contains(item.id) && !item.done =>
         item.copy(done = true)
-      case item =>
+      case item if item.done =>
         item.copy(done = false)
     }
 
