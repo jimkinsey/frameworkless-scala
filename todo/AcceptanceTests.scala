@@ -68,6 +68,13 @@ class AcceptanceTests
     assert("""<div.+role="status".*>.*Get milk unchecked.""".r.findFirstMatchIn(res.body).isDefined)
     assert(!(s"""<input.+name="$getMilkID"[^>]+?>""".r.findFirstMatchIn(res.body) exists (_.matched.contains("checked"))))
   }
+  
+  def testAppServesCSS(): Unit = {
+    val res = HTTP.get("http://localhost:9090/static/todo-mvp.css")
+      
+    assert(res.status == 200)
+    assert(res.body.nonEmpty)
+  }
 
   def tearDown() = {
     server.stop(0)

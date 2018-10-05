@@ -1,6 +1,8 @@
 package todo
 
 import todo.HTTP.{Request, Response}
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class Controller
 (
@@ -9,6 +11,12 @@ class Controller
 {
   def route(req: Request): Response =
     (req.method, req.uri) match {
+      case ("GET", "/static/todo-mvp.css") =>
+        Response(
+          status = 200,
+          body = new String(Files.readAllBytes(Paths.get("todo/todo-mvp.css"))),
+          headers = Map("Content-Type" -> Seq("text/css; charset=UTF-8"))
+        )
       case ("GET", "/") =>
         Response(200, View.page(todos.list), Map("Content-Type" -> Seq("text/html; charset=UTF-8")))
       case ("POST", "/") if Form.values(req.body).get("delete").isDefined =>
