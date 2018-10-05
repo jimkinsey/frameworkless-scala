@@ -9,7 +9,7 @@ import org.http4s.client.blaze.Http1Client
 import org.http4s.dsl.io._
 import org.http4s.headers.`Content-Type`
 import org.http4s.{Cookie, EntityDecoder, Method, Request, Uri, UrlForm}
-import todo.testing.pages
+import todo.testing.{Resources, pages}
 import utest._
 
 object AcceptanceTests
