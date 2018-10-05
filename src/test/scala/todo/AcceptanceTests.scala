@@ -115,7 +115,7 @@ with Resources
   }
 
   def startApplication(port: Int)  = {
-    App.bootstrap(testAppHost, port).compile.drain.unsafeToFuture
+    App.bootstrap(testAppHost, Some(port)).compile.drain.unsafeToFuture
   }
 
   lazy val client = Http1Client[IO]().unsafeRunSync
