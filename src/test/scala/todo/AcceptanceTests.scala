@@ -6,9 +6,10 @@ import org.http4s.MediaType.`text/css`
 import org.http4s.Method.GET
 import org.http4s.Uri.Path
 import org.http4s.client.blaze.Http1Client
-import org.http4s.headers.`Content-Type`
 import org.http4s.dsl.io._
-import org.http4s.{Charset, Cookie, EntityDecoder, MediaType, Method, Request, Uri, UrlForm}
+import org.http4s.headers.`Content-Type`
+import org.http4s.{Cookie, EntityDecoder, Method, Request, Uri, UrlForm}
+import todo.testing.pages
 import utest._
 
 object AcceptanceTests
@@ -23,21 +24,24 @@ with Resources
 
       val (_, body) = fetch(method = POST, form = Map("name" -> "Get milk"))
 
-      // TODO JSOUP!!!
-      assert("""<div.+role="status".*>.*Get milk added.""".r.findFirstMatchIn(body).isDefined)
+      val page = pages.TodoListPage(body)
+
+      assert(page.liveFeedback contains "Get milk added.")
     }
 
     "Deleting an item" - {
       implicit val port = findFreePort
       startApplication(port)
 
-      val (_, create) = fetch(method = POST, form = Map("name" -> "Get milk"))
-      val getMilkID = """<input.+name="([a-f0-9\-]+)"""".r.findFirstMatchIn(create).get.group(1)
+      val (_, createBody) = fetch(method = POST, form = Map("name" -> "Get milk"))
+      val getMilkID = pages.TodoListPage(createBody).todoList.head.id
       val (_, body) = fetch(method = POST, form = Map("delete" -> getMilkID))
 
+      val deletePage = pages.TodoListPage(body)
+
       assert(
-        """<div.+role="status".*>.*Get milk deleted.""".r.findFirstMatchIn(body).isDefined,
-        !body.contains(getMilkID)
+        deletePage.liveFeedback contains "Get milk deleted.",
+        !(deletePage.todoList exists (_.id == getMilkID)),
       )
     }
 
@@ -45,25 +49,34 @@ with Resources
       implicit val port = findFreePort
       startApplication(port)
 
-      val (_, create) = fetch(method = POST, form = Map("name" -> "Get milk"))
-      val getMilkID = """<input.+name="([a-f0-9\-]+)"""".r.findFirstMatchIn(create).get.group(1)
+      val (_, createBody) = fetch(method = POST, form = Map("name" -> "Get milk"))
+      val getMilkID = pages.TodoListPage(createBody).todoList.head.id
       val (_, body) = fetch(method = POST, form = Map(getMilkID -> "on"))
 
-      assert("""<div.+role="status".*>.*Get milk checked off.""".r.findFirstMatchIn(body).isDefined)
-      assert(s"""<input.+name="$getMilkID"[^>]+?>""".r.findFirstMatchIn(body) exists (_.matched.contains("checked")))
+      val checkOffPage = pages.TodoListPage(body)
+
+      assert(
+        checkOffPage.liveFeedback contains "Get milk checked off.",
+        checkOffPage.todoList.find(_.id == getMilkID) exists (_.checked),
+      )
     }
 
     "Unchecking an item" - {
       implicit val port = findFreePort
       startApplication(port)
 
-      val (_, create) = fetch(method = POST, form = Map("name" -> "Get milk"))
-      val getMilkID = """<input.+name="([a-f0-9\-]+)"""".r.findFirstMatchIn(create).get.group(1)
+      val (_, createBody) = fetch(method = POST, form = Map("name" -> "Get milk"))
+      val getMilkID = pages.TodoListPage(createBody).todoList.head.id
+
       fetch(method = POST, form = Map(getMilkID -> "on"))
       val (_, body) = fetch(method = POST, form = Map())
 
-      assert("""<div.+role="status".*>.*Get milk unchecked.""".r.findFirstMatchIn(body).isDefined)
-      assert(!(s"""<input.+name="$getMilkID"[^>]+?>""".r.findFirstMatchIn(body) exists (_.matched.contains("checked"))))
+      val uncheckedPage = pages.TodoListPage(body)
+
+      assert(
+        uncheckedPage.liveFeedback contains "Get milk unchecked.",
+        !(uncheckedPage.todoList.find(_.id == getMilkID) exists (_.checked)),
+      )
     }
 
     "Serving the CSS file" - {

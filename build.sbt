@@ -13,7 +13,8 @@ libraryDependencies ++= {
     "org.http4s" %% "http4s-blaze-client" % http4sVersion,
     "io.frees" %% "frees-http4s" % "0.8.0",
     "com.lihaoyi" %% "scalatags" % "0.6.7",
-    "com.lihaoyi" %% "utest" % "0.6.3" % "test"
+    "com.lihaoyi" %% "utest" % "0.6.3" % "test",
+    "org.jsoup" % "jsoup" % "1.11.3" % "test"
   )
 }
 
