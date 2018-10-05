@@ -9,45 +9,7 @@ object View
         <html>
           <head>
             <title>My Todo List</title>
-            <style>
-              .empty-state, ul:empty {
-                display: none;
-              }
-              ul:empty + .empty-state {
-                display: block;
-              }
-
-              ::-webkit-input-placeholder {
-                color: #444;
-                font-style: italic;
-              }
-              ::-moz-placeholder {
-                color: #444;
-                font-style: italic;
-              }
-              :-ms-input-placeholder {
-                color: #444;
-                font-style: italic;
-              }
-              :-moz-placeholder {
-                color: #444;
-                font-style: italic;
-              }
-
-              .vh {
-                position: absolute !important;
-                clip: rect(1px, 1px, 1px, 1px);
-                padding:0 !important;
-                border:0 !important;
-                height: 1px !important;
-                width: 1px !important;
-                overflow: hidden;
-              }
-
-              :checked + label {
-                text-decoration: line-through;
-              }
-            </style>
+            <link rel="stylesheet" type="text/css" href="/static/todo-mvp.css"/>
           </head>
           <body>
            <section aria-labelledby="todos-label">

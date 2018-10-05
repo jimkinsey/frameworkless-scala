@@ -23,9 +23,9 @@ extends StreamApp[IO]
       todos = new Todos(store)
       controller = new Controller(todos)
       routes = HttpService[IO] {
-        controller.page orElse controller.submit
+        controller.page orElse controller.submit orElse controller.stylesheet
       }
-      exitCode                 <- startWeb(routes, host, port)
+      exitCode <- startWeb(routes, host, port)
     } yield exitCode
 
   def startWeb(service: HttpService[IO], host: String, port: Int): Stream[IO, ExitCode] = {

@@ -1,11 +1,14 @@
 package todo
 
 import cats.effect.IO
+import org.http4s.Charset.`UTF-8`
+import org.http4s.MediaType.`text/css`
 import org.http4s.Method.GET
 import org.http4s.Uri.Path
 import org.http4s.client.blaze.Http1Client
+import org.http4s.headers.`Content-Type`
 import org.http4s.dsl.io._
-import org.http4s.{Cookie, EntityDecoder, Method, Request, Uri, UrlForm}
+import org.http4s.{Charset, Cookie, EntityDecoder, MediaType, Method, Request, Uri, UrlForm}
 import utest._
 
 object AcceptanceTests
@@ -61,6 +64,19 @@ with Resources
 
       assert("""<div.+role="status".*>.*Get milk unchecked.""".r.findFirstMatchIn(body).isDefined)
       assert(!(s"""<input.+name="$getMilkID"[^>]+?>""".r.findFirstMatchIn(body) exists (_.matched.contains("checked"))))
+    }
+
+    "Serving the CSS file" - {
+      implicit val port = findFreePort
+      startApplication(port)
+
+      val (res, css) = fetch(method = GET, path = "/static/todo-mvp.css")
+
+      assert(
+        res.status.code == 200,
+        res.contentType contains `Content-Type`(`text/css`, `UTF-8`),
+        css.nonEmpty,
+      )
     }
 
   }

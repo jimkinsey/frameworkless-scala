@@ -1,9 +1,11 @@
 package todo
 
 import cats.effect.IO
-import org.http4s.{Charset, MediaType, Request, Response, UrlForm}
+import org.http4s.Charset.`UTF-8`
+import org.http4s.MediaType.{`text/css`, `text/html`}
 import org.http4s.dsl.io._
 import org.http4s.headers.`Content-Type`
+import org.http4s.{Request, Response, UrlForm, _}
 
 class Controller
 (
@@ -12,9 +14,16 @@ class Controller
 {
   type Action = PartialFunction[Request[IO], IO[Response[IO]]]
 
+  def stylesheet: Action = {
+    case req @ GET -> Root / "static" / "todo-mvp.css" =>
+      StaticFile.fromResource("/todo-mvp.css", Some(req))
+        .map(_.withContentType(`Content-Type`(`text/css`, `UTF-8`)))
+        .getOrElseF(NotFound())
+  }
+
   def page: Action  = {
     case GET -> Root =>
-      Ok(View.page(todos.list)).withContentType(`Content-Type`(MediaType.`text/html`, Charset.`UTF-8`))
+      Ok(View.page(todos.list)).withContentType(`Content-Type`(`text/html`, `UTF-8`))
   }
 
   def submit: Action = {
@@ -27,13 +36,13 @@ class Controller
           } yield item.name
 
           Ok(View.page(todos.list, feedback = name.fold("")(n => s"$n deleted.")))
-            .withContentType(`Content-Type`(MediaType.`text/html`, Charset.`UTF-8`))
+            .withContentType(`Content-Type`(`text/html`, `UTF-8`))
         case form if form.getFirst("name").isDefined =>
           val name = form.getFirst("name").head
           todos.add(name)
 
           Created(View.page(todos.list, feedback = s"$name added."))
-            .withContentType(`Content-Type`(MediaType.`text/html`, Charset.`UTF-8`))
+            .withContentType(`Content-Type`(`text/html`, `UTF-8`))
         case form =>
           val (checkedOff, unchecked) = todos.checkOff(form.values.filter(_._2 contains "on").keys.toSeq:_*).partition(_.done)
 
@@ -42,7 +51,7 @@ class Controller
           val separator = if (checkedOff.nonEmpty && unchecked.nonEmpty) ", " else ""
 
           Ok(View.page(todos.list, feedback = s"$prefix$separator$suffix."))
-            .withContentType(`Content-Type`(MediaType.`text/html`, Charset.`UTF-8`))
+            .withContentType(`Content-Type`(`text/html`, `UTF-8`))
       }
   }
 }
