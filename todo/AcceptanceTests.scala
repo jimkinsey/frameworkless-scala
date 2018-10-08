@@ -93,6 +93,16 @@ class AcceptanceTests
     assert(get.body == "true")
   }
 
+  def testUncheckingViaAPI(): Unit = {
+    val create = HTTP.post("http://localhost:9090/todos", "Get milk")
+    val id = create.body
+    HTTP.put(s"http://localhost:9090/todos/$id/done", "true")
+    HTTP.put(s"http://localhost:9090/todos/$id/done", "false")
+    val get = HTTP.get(s"http://localhost:9090/todos/$id/done")
+
+    assert(get.body == "false")
+  }
+
   def tearDown() = {
     server.stop(0)
   }
