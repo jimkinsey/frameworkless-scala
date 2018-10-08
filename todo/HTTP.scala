@@ -14,8 +14,8 @@ object HTTP
     send(Request("POST", uri, body))
   }
 
-  def put(uri: String): Response = {
-    send(Request("PUT", uri))
+  def put(uri: String, body: String): Response = {
+    send(Request("PUT", uri, body))
   }
 
   def delete(uri: String): Response = {

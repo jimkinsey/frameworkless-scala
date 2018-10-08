@@ -68,7 +68,25 @@ class Controller
           body = item.id
         )
 
+      case ("PUT", Done(id)) =>
+        val item = todos.checkOff(id)
+
+        Response(status = 200)
+
+      case ("GET", Done(id)) =>
+        todos.get(id) match {
+          case Some(item) =>
+            Response(
+              status = 200,
+              body = item.done.toString
+            )
+          case None =>
+            Response(404)
+        }
+
       case _ =>
         Response(404)
     }
+
+  val Done = """\/todos\/(.+)\/done""".r
 }

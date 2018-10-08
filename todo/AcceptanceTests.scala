@@ -83,6 +83,16 @@ class AcceptanceTests
     assert(res.body.nonEmpty)
   }
 
+  def testCheckingOffViaAPI(): Unit = {
+    val create = HTTP.post("http://localhost:9090/todos", "Get milk")
+    val id = create.body
+    val update = HTTP.put(s"http://localhost:9090/todos/$id/done", "true")
+    val get = HTTP.get(s"http://localhost:9090/todos/$id/done")
+
+    assert(update.status == 200)
+    assert(get.body == "true")
+  }
+
   def tearDown() = {
     server.stop(0)
   }
