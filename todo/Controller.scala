@@ -77,7 +77,7 @@ class Controller
         todos.get(id) match {
           case Some(item) =>
             Response(
-              status = 200,K
+              status = 200,
               body = item.done.toString
             )
           case None =>
