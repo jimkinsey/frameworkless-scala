@@ -77,16 +77,22 @@ class Controller
         todos.get(id) match {
           case Some(item) =>
             Response(
-              status = 200,
+              status = 200,K
               body = item.done.toString
             )
           case None =>
             Response(404)
         }
 
+      case ("DELETE", Todo(id)) =>
+        todos.remove(id)
+
+        Response(status = 204)
+
       case _ =>
         Response(404)
     }
 
   val Done = """\/todos\/(.+)\/done""".r
+  val Todo = """\/todos\/(.+)""".r
 }

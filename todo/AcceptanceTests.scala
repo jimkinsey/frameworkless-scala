@@ -103,6 +103,16 @@ class AcceptanceTests
     assert(get.body == "false")
   }
 
+  def testDeletionViaAPI() = {
+    val create = HTTP.post("http://localhost:9090/todos", "Get milk")
+    val id = create.body
+    val delete = HTTP.delete(s"http://localhost:9090/todos/$id")
+    val get = HTTP.get(s"http://localhost:9090/todos/$id/done")
+
+    assert(delete.status == 204)
+    assert(get.status == 404)
+  }
+
   def tearDown() = {
     server.stop(0)
   }
