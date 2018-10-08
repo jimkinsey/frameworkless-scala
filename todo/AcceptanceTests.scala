@@ -76,6 +76,13 @@ class AcceptanceTests
     assert(res.body.nonEmpty)
   }
 
+  def testCreationViaAPI(): Unit = {
+    val res = HTTP.post("http://localhost:9090/todos", "Get milk")
+
+    assert(res.status == 201)
+    assert(res.body.nonEmpty)
+  }
+
   def tearDown() = {
     server.stop(0)
   }

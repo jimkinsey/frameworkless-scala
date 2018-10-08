@@ -11,14 +11,17 @@ class Controller
 {
   def route(req: Request): Response =
     (req.method, req.uri) match {
+
       case ("GET", "/static/todo-mvp.css") =>
         Response(
           status = 200,
           body = new String(Files.readAllBytes(Paths.get("todo/todo-mvp.css"))),
           headers = Map("Content-Type" -> Seq("text/css; charset=UTF-8"))
         )
+
       case ("GET", "/") =>
         Response(200, View.page(todos.list), Map("Content-Type" -> Seq("text/html; charset=UTF-8")))
+
       case ("POST", "/") if Form.values(req.body).get("delete").isDefined =>
         val name = for {
           ids <- Form.values(req.body).get("delete")
@@ -31,6 +34,7 @@ class Controller
           body = View.page(todos.list, feedback = name.fold("")(n => s"$n deleted.")),
           headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
         )
+
       case ("POST", "/") if Form.values(req.body).get("name").isDefined =>
         val name = Form.values(req.body)("name").head
         todos.add(name)
@@ -40,6 +44,7 @@ class Controller
           body = View.page(todos.list, feedback = s"$name added."),
           headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
         )
+
       case ("POST", "/") =>
         val form = Form.values(req.body)
 
@@ -54,6 +59,15 @@ class Controller
           body = View.page(todos.list, feedback = s"$prefix$separator$suffix."),
           headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
         )
+
+      case ("POST", "/todos") =>
+        val item = todos.add(req.body)
+
+        Response(
+          status = 201,
+          body = item.id
+        )
+
       case _ =>
         Response(404)
     }
