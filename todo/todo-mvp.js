@@ -1,6 +1,8 @@
 function init() {
   initAdding();
-  initRemoving(...document.querySelectorAll('li'));
+  let items = document.querySelectorAll('li');
+  initRemoving(...items);
+  initChecking(...items);
 }
 
 function initAdding() {
@@ -36,6 +38,7 @@ function initAdding() {
           document.querySelector('ul').appendChild(fragment);
 
           initRemoving(document.querySelector('ul').lastElementChild);
+          initChecking(document.querySelector('ul').lastElementChild);
 
           updateStatus(`${name} added.`);
         });
@@ -56,7 +59,7 @@ function initRemoving(...lis) {
       event.preventDefault();
 
       let id = li.querySelector('button[name=delete]').value;
-      let name = li.querySelector('label').text;
+      let name = li.querySelector('label').innerHTML;
 
       fetch(`/todos/${id}`, {
         method: 'DELETE',
@@ -73,6 +76,36 @@ function initRemoving(...lis) {
       .catch(e => {
         alertUser(`Failed to remove "${name}", an unexpected error occurred.`);
         console.error(`Failed to remove "${name}" - ${e}`)
+      });
+    }
+  });
+};
+
+function initChecking(...lis) {
+  lis.forEach(li => {
+    let checkbox = li.querySelector('input[type=checkbox]');
+
+    checkbox.onclick = (event) => {
+      event.preventDefault();
+
+      let id = li.querySelector('button[name=delete]').value;
+      let name = li.querySelector('label').innerHTML;
+
+      fetch(`/todos/${id}/done`, {
+        method: 'PUT',
+        body: checkbox.checked.toString()
+      })
+      .then(res => {
+        if (res.ok) {
+          checkbox.checked = !checkbox.checked;
+          updateStatus(`${name} ${checkbox.checked ? 'checked off' : 'unchecked'}.`);
+        } else {
+          alertUser(`Failed to update "${name}", server returned ${res.status}.`);
+        }
+      })
+      .catch(e => {
+        alertUser(`Failed to update "${name}", an unexpected error occurred.`);
+        console.error(`Failed to update "${name}" - ${e}`)
       });
     }
   });

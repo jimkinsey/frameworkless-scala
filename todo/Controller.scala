@@ -69,7 +69,7 @@ class Controller
         )
 
       case ("PUT", Done(id)) =>
-        val item = todos.checkOff(id)
+        val item = todos.update(id, req.body == "true")
 
         Response(status = 200)
 
