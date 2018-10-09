@@ -1,4 +1,9 @@
 function init() {
+  initAdding();
+  initRemoving(...document.querySelectorAll('li'));
+}
+
+function initAdding() {
   document.querySelector('form[name=add]').onsubmit = (event) => {
     event.preventDefault();
 
@@ -30,18 +35,55 @@ function init() {
 
           document.querySelector('ul').appendChild(fragment);
 
-          let feedback = document.querySelector('div[role=status]');
-          feedback.innerHTML = `${name} added.`
+          initRemoving(document.querySelector('ul').lastElementChild);
+
+          updateStatus(`${name} added.`);
         });
       } else {
-        let alert = document.querySelector('div[role=alert]');
-        alert.innerHTML = `<p>Failed to add "${name}", server returned ${res.status}.</p>`
+        alertUser(`Failed to add "${name}", server returned ${res.status}.`);
       }
     })
     .catch(e => {
-      let alert = document.querySelector('div[role=alert]');
-      alert.innerHTML = `<p>Failed to add "${name}", an unexpected error occurred.</p>`
+      alertUser(`Failed to add "${name}", an unexpected error occurred.`);
       console.error(`Failed to add "${name}" - ${e}`)
     });
   };
+}
+
+function initRemoving(...lis) {
+  lis.forEach(li => {
+    li.querySelector('button[name=delete]').onclick = (event) => {
+      event.preventDefault();
+
+      let id = li.querySelector('button[name=delete]').value;
+      let name = li.querySelector('label').text;
+
+      fetch(`/todos/${id}`, {
+        method: 'DELETE',
+        body: name
+      })
+      .then(res => {
+        if (res.ok) {
+          li.remove();
+          updateStatus(`${name} deleted.`);
+        } else {
+          alertUser(`Failed to remove "${name}", server returned ${res.status}.`);
+        }
+      })
+      .catch(e => {
+        alertUser(`Failed to remove "${name}", an unexpected error occurred.`);
+        console.error(`Failed to remove "${name}" - ${e}`)
+      });
+    }
+  });
+};
+
+function alertUser(message) {
+  let alert = document.querySelector('div[role=alert]');
+  alert.innerHTML = `<p>${message}</p>`
+}
+
+function updateStatus(message) {
+  let status = document.querySelector('div[role=status]');
+  status.innerHTML = message;
 }
