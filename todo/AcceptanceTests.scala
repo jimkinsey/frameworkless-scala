@@ -113,6 +113,13 @@ class AcceptanceTests
     assert(get.status == 404)
   }
 
+  def testAppServesJS(): Unit = {
+    val res = HTTP.get("http://localhost:9090/static/todo-mvp.js")
+
+    assert(res.status == 200)
+    assert(res.body.nonEmpty)
+  }
+
   def tearDown() = {
     server.stop(0)
   }

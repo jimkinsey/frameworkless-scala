@@ -12,10 +12,10 @@ class Controller
   def route(req: Request): Response =
     (req.method, req.uri) match {
 
-      case ("GET", "/static/todo-mvp.css") =>
+      case ("GET", Static(filename)) =>
         Response(
           status = 200,
-          body = new String(Files.readAllBytes(Paths.get("todo/todo-mvp.css"))),
+          body = new String(Files.readAllBytes(Paths.get(s"todo/$filename"))),
           headers = Map("Content-Type" -> Seq("text/css; charset=UTF-8"))
         )
 
@@ -31,7 +31,7 @@ class Controller
 
         Response(
           status = 200,
-          body = View.page(todos.list, feedback = name.fold("")(n => s"$n deleted.")),
+          body = View.page(todos.list, status = name.fold("")(n => s"$n deleted.")),
           headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
         )
 
@@ -41,7 +41,7 @@ class Controller
 
         Response(
           status = 201,
-          body = View.page(todos.list, feedback = s"$name added."),
+          body = View.page(todos.list, status = s"$name added."),
           headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
         )
 
@@ -56,7 +56,7 @@ class Controller
 
         Response(
           status = 200,
-          body = View.page(todos.list, feedback = s"$prefix$separator$suffix."),
+          body = View.page(todos.list, status = s"$prefix$separator$suffix."),
           headers = Map("Content-Type" -> Seq("text/html; charset=UTF-8"))
         )
 
@@ -95,4 +95,5 @@ class Controller
 
   val Done = """\/todos\/(.+)\/done""".r
   val Todo = """\/todos\/(.+)""".r
+  val Static = """\/static\/(.+?\.(?:css|js))""".r
 }
