@@ -28,7 +28,7 @@ function initAdding() {
           input.id = `todo-${number}`
 
           let label = fragment.querySelector('label');
-          label.innerHTML = name;
+          label.append(name);
           label.setAttribute('for', input.id);
 
           let button = fragment.querySelector('button');
@@ -113,10 +113,10 @@ function initChecking(...lis) {
 
 function alertUser(message) {
   let alert = document.querySelector('div[role=alert]');
-  alert.innerHTML = `<p>${message}</p>`
+  alert.lastElementChild.replaceWith(`<p>${message}</p>`);
 }
 
 function updateStatus(message) {
   let status = document.querySelector('div[role=status]');
-  status.innerHTML = message;
+  status.lastElementChild.replaceWith(`<p>${message}</p>`);
 }

@@ -7,8 +7,8 @@ object View
   def itemFragment(item: Item, number: Int): String = {
     s"""<li>
       <input type="checkbox" id="todo-$number"${if (item.done) " checked" else ""} name="${item.id}" onchange="this.form.submit();">
-      <label for="todo-$number">${item.name}</label>
-      <button aria-label="delete ${item.name}" name="delete" value="${item.id}">&times;</button>
+      <label for="todo-$number">${EscapeHTML.forElement(item.name)}</label>
+      <button aria-label="delete ${EscapeHTML.forAttribute(item.name)}" name="delete" value="${item.id}">&times;</button>
     </li>"""
   }
 
