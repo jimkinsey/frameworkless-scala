@@ -15,9 +15,8 @@ class Controller
   type Action = PartialFunction[Request[IO], IO[Response[IO]]]
 
   def stylesheet: Action = {
-    case req @ GET -> Root / "static" / "todo-mvp.css" =>
-      StaticFile.fromResource("/todo-mvp.css", Some(req))
-        .map(_.withContentType(`Content-Type`(`text/css`, `UTF-8`)))
+    case req @ GET -> Root / "static" / filename =>
+      StaticFile.fromResource(s"/$filename", Some(req))
         .getOrElseF(NotFound())
   }
 
@@ -29,6 +28,7 @@ class Controller
   def submit: Action = {
     case req @ POST -> Root =>
       req.decode[UrlForm] {
+
         case form if form.getFirst("delete").isDefined =>
           val name = for {
             id <- form.getFirst("delete")
@@ -37,12 +37,14 @@ class Controller
 
           Ok(View.page(todos.list, feedback = name.fold("")(n => s"$n deleted.")))
             .withContentType(`Content-Type`(`text/html`, `UTF-8`))
+
         case form if form.getFirst("name").isDefined =>
           val name = form.getFirst("name").head
           todos.add(name)
 
           Created(View.page(todos.list, feedback = s"$name added."))
             .withContentType(`Content-Type`(`text/html`, `UTF-8`))
+
         case form =>
           val (checkedOff, unchecked) = todos.checkOff(form.values.filter(_._2 contains "on").keys.toSeq:_*).partition(_.done)
 
@@ -52,6 +54,15 @@ class Controller
 
           Ok(View.page(todos.list, feedback = s"$prefix$separator$suffix."))
             .withContentType(`Content-Type`(`text/html`, `UTF-8`))
+
+      }
+  }
+
+  def api: Action = {
+    case req @ PUT -> Root / "todos" / id / "done" =>
+      req.decode[String] { body =>
+        todos.update(id, body.toBoolean)
+        Ok()
       }
   }
 }

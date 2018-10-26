@@ -35,4 +35,12 @@ class Todos
 
     updated
   }
+
+  def update(id: String, done: Boolean): Option[Item] = {
+    get(id).map { old =>
+      val updated = old.copy(done = done)
+      store.put(updated)
+      updated
+    }
+  }
 }

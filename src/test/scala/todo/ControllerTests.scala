@@ -55,5 +55,18 @@ extends TestSuite
         todos.get(batheCat.id).exists(_.done == false) && todos.get(shootDog.id).exists(_.done)
       )
     }
+
+    "PUT to API for marking an item as done" - {
+      val todos = new Todos(new Store())
+      val item = todos.add("Bring in cat")
+
+      val req = Request[IO](PUT, Uri.unsafeFromString(s"/todos/${item.id}/done")).withBody("true").unsafeRunSync()
+
+      new Controller(todos).api(req).unsafeRunSync()
+
+      assert(
+        todos.get(item.id) exists (_.done),
+      )
+    }
   }
 }

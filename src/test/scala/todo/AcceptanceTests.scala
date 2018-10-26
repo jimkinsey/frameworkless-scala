@@ -2,13 +2,14 @@ package todo
 
 import cats.effect.IO
 import org.http4s.Charset.`UTF-8`
-import org.http4s.MediaType.`text/css`
+import org.http4s.MediaType.{`application/javascript`, `text/css`}
 import org.http4s.Method.GET
 import org.http4s.Uri.Path
 import org.http4s.client.blaze.Http1Client
 import org.http4s.dsl.io._
 import org.http4s.headers.`Content-Type`
 import org.http4s.{Cookie, EntityDecoder, Method, Request, Uri, UrlForm}
+import todo.testing.pages.TodoListPage
 import todo.testing.{Resources, pages}
 import utest._
 
@@ -87,8 +88,38 @@ with Resources
 
       assert(
         res.status.code == 200,
-        res.contentType contains `Content-Type`(`text/css`, `UTF-8`),
+        res.contentType contains `Content-Type`(`text/css`),
         css.nonEmpty,
+      )
+    }
+
+    "Serving the JS file" - {
+      implicit val port = findFreePort
+      startApplication(port)
+
+      val (res, js) = fetch(method = GET, path = "/static/todo-mvp.js")
+
+      assert(
+        res.status.code == 200,
+        res.contentType contains `Content-Type`(`application/javascript`),
+        js.nonEmpty,
+      )
+    }
+
+    "Checking off via API" - {
+      implicit val port = findFreePort
+      startApplication(port)
+
+      val (_, createBody) = fetch(method = POST, form = Map("name" -> "Get milk"))
+      val getMilkID = pages.TodoListPage(createBody).todoList.head.id
+
+      val (checkOffViaAPI, _) = fetch(path = s"/todos/$getMilkID/done", method = PUT, body = "true")
+      val (_, body) = fetch()
+      val page = TodoListPage(body)
+
+      assert(
+        checkOffViaAPI.status.code == 200,
+        page.todoList.head.checked,
       )
     }
 
@@ -98,13 +129,19 @@ with Resources
     path: Path = "/",
     method: Method = GET,
     cookies: Map[String, String] = Map.empty,
-    form: Map[String, String] = Map.empty)(implicit port: Int) = {
+    form: Map[String, String] = Map.empty,
+    body: String = "")(implicit port: Int) = {
 
     lazy val testAppUri = Uri.unsafeFromString(s"http://$testAppHost:$port")
 
     val ioToString = implicitly[EntityDecoder[IO, String]]
 
-    val request = Request[IO](method = method, uri = testAppUri withPath path).withBody(UrlForm(form.mapValues(v => Seq(v)))).unsafeRunSync()
+    val baseRequest = Request[IO](method = method, uri = testAppUri withPath path)
+    val request = body match {
+      case "" => baseRequest.withBody(UrlForm(form.mapValues(v => Seq(v)))).unsafeRunSync()
+      case _ => baseRequest.withBody(body).unsafeRunSync()
+    }
+
     val requestWithCookies = cookies.foldLeft(request) {
       case (acc, (name, value)) => acc.addCookie(Cookie(name, value))
     }

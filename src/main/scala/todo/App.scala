@@ -22,7 +22,7 @@ extends StreamApp[IO]
       todos = new Todos(store)
       controller = new Controller(todos)
       routes = HttpService[IO] {
-        controller.page orElse controller.submit orElse controller.stylesheet
+        controller.page orElse controller.api orElse controller.submit orElse controller.stylesheet
       }
       exitCode <- startWeb(
         service = routes,

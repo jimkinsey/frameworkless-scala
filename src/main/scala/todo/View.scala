@@ -9,12 +9,13 @@ object View
   val section: Text.TypedTag[String] = tag("section")
   val noscript: Text.TypedTag[String] = tag("noscript")
 
-  def page(items: Seq[Item] = Seq.empty, feedback: String = ""): String = {
+  def page(items: Seq[Item] = Seq.empty, feedback: String = "", alert: String = ""): String = {
 
     "<!DOCTYPE HTML>\n" + html(
       head(
         tag("title")("My Todo List"),
-        link(rel := "stylesheet", `type` := "text/css", href := "/static/todo-mvp.css")
+        link(rel := "stylesheet", `type` := "text/css", href := "/static/todo-mvp.css"),
+        script(src := "https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"),
       ),
       body(
         section(
@@ -37,8 +38,10 @@ object View
             input(`type` := "text", aria.label := "Write a new todo item", placeholder := "E.g. Adopt an owl", name := "name"),
             button(`type` := "submit")("Add")
           ),
-          div(role := "status", aria.live := "polite", `class` := "vh")(feedback)
-        )
+          div(role := "status", aria.live := "polite", `class` := "vh")(feedback),
+          div(role := "alert", aria.live := "assertive")(alert),
+        ),
+        script(src := "/static/todo-mvp.js"),
       )
     )
   }
