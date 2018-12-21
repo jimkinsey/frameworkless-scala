@@ -34,13 +34,10 @@ object HTTP
 
     conn.connect()
 
-    val body =
-      if (conn.getContentLength > 0) {
-        val str = new String(InputStreams.getBytes(conn.getInputStream), "UTF-8")
-        str
-      } else {
-        ""
-      }
+    val body = conn.getContentLength match {
+      case 0 => ""
+      case _ => new String(InputStreams.getBytes(conn.getInputStream), "UTF-8")
+    }
 
     val headers = conn.getHeaderFields.asScala.filter(_._1 != null).foldLeft[Headers](Map.empty) {
       case (acc, (key, values)) => acc ++ Map(key -> values.asScala)
