@@ -1,1 +1,1 @@
-web: java -cp bin/todo.jar todo.App
+web: java -cp dist/todo.jar todo.App

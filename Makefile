@@ -1,6 +1,7 @@
 SRC = .
 BIN = ./bin
 LIB = ./lib
+DIST = ./dist
 SOURCES = $(shell ls $(SRC)/**/*.scala)
 S = scala
 SC = scalac
@@ -10,7 +11,7 @@ compile:
 	@$(SC) -cp $(BIN) -d $(BIN) $(SOURCES)
 
 clean:
-	@$(RM) -r $(BIN) $(LIB)
+	@$(RM) -r $(BIN) $(LIB) $(DIST)
 	
 run:
 	@$(S) -cp $(BIN) todo.App
@@ -19,8 +20,10 @@ test:
 	@$(S) -cp $(BIN) todo.TestRunner
 
 assemble:
-	@unzip $(LIB)/* -d $(BIN)/
-	cd $(BIN); jar cef todo.App todo.jar *
+	@mkdir -p $(DIST)
+	@cp -r $(BIN)/* $(DIST)/
+	@unzip $(LIB)/* -d $(DIST)/
+	cd $(DIST); jar cef todo.App todo.jar *
 
 deps:
 	@mkdir -p $(LIB)
