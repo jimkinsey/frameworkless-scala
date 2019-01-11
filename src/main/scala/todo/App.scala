@@ -7,6 +7,7 @@ import org.http4s.HttpService
 import org.http4s.server.blaze.BlazeBuilder
 import org.http4s.server.middleware.{AutoSlash, GZip}
 
+import scala.util.{Try, Success, Failure}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object App
@@ -16,20 +17,25 @@ extends StreamApp[IO]
     bootstrap(host = "localhost")
 
   def bootstrap(host: String, port: Option[Int] = None): Stream[IO, ExitCode] =
-    for {
-      conf <- Stream.eval(Config.load[IO])
-      store = new Store()
-      todos = new Todos(store)
-      controller = new Controller(todos)
-      routes = HttpService[IO] {
-        controller.page orElse controller.api orElse controller.submit orElse controller.stylesheet
-      }
-      exitCode <- startWeb(
-        service = routes,
-        host = host,
-        port = port.getOrElse(conf.port)
-      )
-    } yield exitCode
+    Try {
+      for {
+        conf <- Stream.eval(Config.load[IO])
+        store = new Store()
+        todos = new Todos(store)
+        controller = new Controller(todos)
+        routes = HttpService[IO] {
+          controller.page orElse controller.api orElse controller.submit orElse controller.stylesheet
+        }
+        exitCode <- startWeb(
+          service = routes,
+          host = host,
+          port = port.getOrElse(conf.port)
+        )
+      } yield exitCode
+    } match {
+      case Success(result) => result
+      case Failure(f) => System.err.println(s"Failed to start the application - $f", f); Stream.empty
+    }
 
   def startWeb(service: HttpService[IO], host: String, port: Int): Stream[IO, ExitCode] = {
     BlazeBuilder[IO]
