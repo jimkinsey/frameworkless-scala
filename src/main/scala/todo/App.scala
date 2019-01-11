@@ -19,13 +19,20 @@ extends StreamApp[IO]
   def bootstrap(host: String, port: Option[Int] = None): Stream[IO, ExitCode] =
     Try {
       for {
+        _ <- Stream.eval(IO(println("Loading config...")))
         conf <- Stream.eval(Config.load[IO])
+        _ = println(s"Loaded config $conf")
+        _ = println("Intialising store...")
         store = new Store()
+        _ = println("Initialising todos...")
         todos = new Todos(store)
+        _ = println("Initialising controller...")
         controller = new Controller(todos)
+        _ = println("Initialising routes...")
         routes = HttpService[IO] {
           controller.page orElse controller.api orElse controller.submit orElse controller.stylesheet
         }
+        _ = println("Starting web-server...")
         exitCode <- startWeb(
           service = routes,
           host = host,
