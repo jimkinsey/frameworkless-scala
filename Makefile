@@ -22,10 +22,10 @@ test:
 assemble:
 	@mkdir -p $(DIST)
 	@cp -r $(BIN)/* $(DIST)/
-	@unzip $(LIB)/* -d $(DIST)/
-	cd $(DIST); jar cef todo.App todo.jar *
+	@unzip -f $(LIB)/* -d $(DIST)/
+	@cd $(DIST); jar cef todo.App todo.jar *
 
 deps:
 	@mkdir -p $(LIB)
-	@wget https://scala-ci.typesafe.com/artifactory/sonatype-releases/org/scala-lang/scala-library/2.12.7/scala-library-2.12.7.jar -O ./lib/scala-library-2.12.7.jar
+	@if [ ! -f ./lib/scala-library-2.12.7.jar ]; then wget https://scala-ci.typesafe.com/artifactory/sonatype-releases/org/scala-lang/scala-library/2.12.7/scala-library-2.12.7.jar -O ./lib/scala-library-2.12.7.jar; fi;
 
