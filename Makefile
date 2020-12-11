@@ -27,5 +27,5 @@ assemble:
 
 deps:
 	@mkdir -p $(LIB)
-	@if [ ! -f ./lib/scala-library-2.12.7.jar ]; then wget https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.7/scala-library-2.12.7.jar -O ./lib/scala-library-2.12.7.jar; fi;
+	@if [ ! -f ./lib/scala-library-2.13.0.jar ]; then wget https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.0/scala-library-2.13.0.jar -O ./lib/scala-library-2.13.0.jar; fi;
 

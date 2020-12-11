@@ -1,5 +1,7 @@
 package todo
 
+import scala.language.postfixOps
+
 class FormTests
 {
   def testFormBodyEmpty(): Unit = {

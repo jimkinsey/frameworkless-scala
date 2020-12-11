@@ -3,6 +3,8 @@ package todo
 import java.net.URLDecoder.decode
 import java.net.{URLDecoder, URLEncoder}
 
+import scala.language.postfixOps
+
 object Form
 {
   type Values = Map[String, Seq[String]]

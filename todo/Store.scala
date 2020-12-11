@@ -15,7 +15,7 @@ class Store
 
   def delete(id: String): Option[Item] = get(id).map(storage.indexOf).map(storage.remove)
 
-  def getAll: Seq[Item] = storage
+  def getAll: Seq[Item] = storage.toSeq
 
   private val storage: mutable.Buffer[Item] = mutable.Buffer()
 }

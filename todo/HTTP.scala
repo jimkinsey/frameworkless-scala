@@ -40,7 +40,7 @@ object HTTP
     }
 
     val headers = conn.getHeaderFields.asScala.filter(_._1 != null).foldLeft[Headers](Map.empty) {
-      case (acc, (key, values)) => acc ++ Map(key -> values.asScala)
+      case (acc, (key, values)) => acc ++ Map(key -> values.asScala.toSeq)
     }
 
     Response(conn.getResponseCode, body, headers)
