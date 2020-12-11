@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+make clean 
+make deps 
+make compile 
+make test 
+make assemble
